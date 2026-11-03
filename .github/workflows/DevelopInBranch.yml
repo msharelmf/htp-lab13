@@ -1,4 +1,5 @@
 # Workflow to show how to develop workflows in branches
+
 name: Develop in a branch
 
 on: [pull_request, workflow_dispatch]
@@ -6,40 +7,30 @@ on: [pull_request, workflow_dispatch]
 jobs:
   job1:
     runs-on: ubuntu-latest
+
     permissions:
       contents: read
-      pull-requests: write
 
     steps:
+      # Step 1: Fetch repository files
       - name: Checkout Source Code
         uses: actions/checkout@v4
 
+      # Step 2: Lint workflow files
       - name: Lint Workflow Files
-        # uses: devops-actions/actionlint@v0.1.2
         uses: raven-actions/actionlint@v2
-        # uses: reviewdog/action-actionlint@v1
-        # with:
-        #   github_token: ${{ secrets.GITHUB_TOKEN }}
-        #   reporter: github-pr-review # Inline review comments on your Pull Request
 
-    #   - name: Install and Run Actionlint Natively
-    #     run: |
-    #       echo "=== Downloading Actionlint ==="
-    #       bash <(curl https://githubusercontent.com/rhysd/actionlint/master/install.sh)
-          
-    #       echo "=== Running Workflow Linting ==="
-    #       ./actionlint -color
-    #     shell: bash
-
+      # Step 3: Output GitHub context metadata
       - name: Output Context Metadata
         run: |
           echo "Workflow triggered in branch '${{ github.ref }}'."
           echo "Workflow triggered by event '${{ github.event_name }}'."
           echo "Workflow triggered by actor '${{ github.actor }}'."
 
+      # Step 4: Print Pull Request title
       - name: Print Pull Request Title
-        # run: echo "Demo PR title is '${{ github.event.pull_request.title }}'."
         if: github.event_name == 'pull_request'
         env:
           PR_TITLE: ${{ github.event.pull_request.title }}
-        run: echo "Demo PR title is '$PR_TITLE'."
+        run: |
+          echo "Demo PR title is '$PR_TITLE'."
